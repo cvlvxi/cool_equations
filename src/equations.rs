@@ -8,6 +8,7 @@ pub fn all_equation_scenes() -> Vec<GameScene> {
         GameScene::GS2(EqStrategy::E1(e13)),
         GameScene::GS2(EqStrategy::E1(e14)),
         GameScene::GS2(EqStrategy::E2(e21)),
+        GameScene::GS2(EqStrategy::E2(e22)),
     ]
 }
 
@@ -41,5 +42,12 @@ pub fn e21(x: f32, mut y: f32, mut xt: f32) -> Vector2<f32> {
     Vector2 {
         x: f32::cos(x / (20.0 / xt) + f32::sin((y + xt) / 30.0)),
         y: f32::sin(x + xt / 10.0 + f32::cos(xt / 20.0)),
+    }
+}
+
+pub fn e22(x: f32, mut y: f32, mut xt: f32) -> Vector2<f32> {
+    Vector2 {
+        x: f32::tan(x/20.0) + f32::sin((y + xt)/30.0),
+        y: f32::cos(x/10.0) + f32::sin(y/20.0),
     }
 }
