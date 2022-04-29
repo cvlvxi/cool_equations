@@ -2,21 +2,22 @@ use speedy2d::color::Color;
 use speedy2d::dimen::Vector2;
 use speedy2d::shape::Rectangle;
 use speedy2d::window::{WindowHandler, WindowHelper};
-use speedy2d::{Graphics2D};
+use speedy2d::Graphics2D;
 
+use crate::heightmap::*;
 use crate::types::*;
-use crate::utils::*;
+use crate::equations::*;
 
 #[derive(Debug)]
 enum EqStrategy {
     E1(FnType),
-    E2(FnType2)
+    E2(FnType2),
 }
 
 #[derive(Debug)]
 enum GameStrategy {
     GS1(HeightMapType),
-    GS2(EqStrategy)
+    GS2(EqStrategy),
 }
 
 #[derive(Debug)]
@@ -113,14 +114,19 @@ impl WindowHandler for Game {
                                         max_height,
                                     ),
                                 );
-                            },
+                            }
                             EqStrategy::E2(equation) => {
                                 let rect_distance = rect_distance as f32;
                                 let x = x as f32;
                                 let y = y as f32;
                                 let result = equation(x, y, self.x_translate);
-                                let xy = Vector2{x,y} * rect_distance;
-                                graphics.draw_line(xy, xy+result, 1.0, Color::from_rgba(0.0, 1.0, 0.0, self.x_translate));
+                                let xy = Vector2 { x, y } * rect_distance;
+                                graphics.draw_line(
+                                    xy,
+                                    xy + result,
+                                    1.0,
+                                    Color::from_rgba(0.0, 1.0, 0.0, self.x_translate),
+                                );
                             }
                         }
                     }
