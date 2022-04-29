@@ -15,6 +15,7 @@ use game::Game;
 
 #[tokio::main]
 async fn main() {
+
     let game = Game::new(HEIGHT_MAP_SIZE, WIDTH, HEIGHT);
     let window = Window::new_centered("Title", (WIDTH, HEIGHT)).unwrap();
     window.run_loop(game);
