@@ -15,14 +15,14 @@ enum EqStrategy {
 }
 
 #[derive(Debug)]
-enum GameStrategy {
+enum GameScene {
     GS1(HeightMapType),
     GS2(EqStrategy),
 }
 
 #[derive(Debug)]
 pub struct Game {
-    strategy: GameStrategy,
+    scenes: Vec<GameScene>,
     width: u32,
     height: u32,
     x_translate: f32,
@@ -31,16 +31,18 @@ pub struct Game {
 impl Game {
     pub fn new(size: usize, width: u32, height: u32) -> Self {
         let mut hm = vec![vec![0.0; size]; size];
-        // let mut hm = Box::new([[0.0]; SIZE]);
         for x in 0..size {
             for y in 0..size {
                 hm[x][y] = generate_height(x as f32, y as f32);
             }
         }
-        // Self { strategy: GameStrategy::Type1(hm), width, height }
-        // Self { strategy: GameStrategy::Type2(cool_equation2), width, height, x_translate: 0.0 }
+
         Self {
-            strategy: GameStrategy::GS2(EqStrategy::E1(cool_equation)),
+            scenes: vec![
+                GameScene::GS2(EqStrategy::E1(cool_equation)),
+                GameScene::GS2(EqStrategy::E2(cool_equation2)),
+                GameScene::GS1(hm)
+            ],
             width,
             height,
             x_translate: 0.0,
@@ -54,8 +56,9 @@ const num_bins: usize = 10;
 impl WindowHandler for Game {
     fn on_draw(&mut self, helper: &mut WindowHelper, graphics: &mut Graphics2D) {
         graphics.clear_screen(Color::from_rgb(0.0, 0.0, 0.0));
-        match &self.strategy {
-            GameStrategy::GS1(heightmap) => {
+        let scene = &self.scenes[1];
+        match scene {
+            GameScene::GS1(heightmap) => {
                 let rect_distance = 5.0 as f32;
                 for x in 0..heightmap.len() {
                     for y in 0..heightmap.len() {
@@ -85,7 +88,7 @@ impl WindowHandler for Game {
                     }
                 }
             }
-            GameStrategy::GS2(equation_strategy) => {
+            GameScene::GS2(equation_strategy) => {
                 let rect_distance: u32 = 5;
                 for x in 0..self.width / rect_distance {
                     for y in 0..self.height / rect_distance {
