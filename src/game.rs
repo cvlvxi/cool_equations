@@ -5,17 +5,17 @@ use speedy2d::window::{KeyScancode, VirtualKeyCode, WindowHandler, WindowHelper}
 use speedy2d::Graphics2D;
 
 use crate::equations::*;
-use crate::heightmap::*;
+use crate::heightcol::*;
 use crate::types::*;
 
 #[derive(Debug)]
-enum EqStrategy {
+pub enum EqStrategy {
     E1(FnType),
     E2(FnType2),
 }
 
 #[derive(Debug)]
-enum GameScene {
+pub enum GameScene {
     GS1(HeightMapType),
     GS2(EqStrategy),
 }
@@ -38,12 +38,11 @@ impl Game {
             }
         }
 
+        let mut all_scenes = all_equation_scenes();
+        all_scenes.push(GameScene::GS1(hm));
+
         Self {
-            scenes: vec![
-                GameScene::GS2(EqStrategy::E1(cool_equation)),
-                GameScene::GS2(EqStrategy::E2(cool_equation2)),
-                GameScene::GS1(hm),
-            ],
+            scenes: all_scenes,
             width,
             height,
             delta: 0.0,

@@ -1,7 +1,7 @@
 #![feature(generic_const_exprs)]
 mod game;
 mod types;
-mod heightmap;
+mod heightcol;
 mod equations;
 
 use speedy2d::{Graphics2D, Window};
