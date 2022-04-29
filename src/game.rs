@@ -1,12 +1,12 @@
 use speedy2d::color::Color;
 use speedy2d::dimen::Vector2;
 use speedy2d::shape::Rectangle;
-use speedy2d::window::{WindowHandler, WindowHelper};
+use speedy2d::window::{KeyScancode, VirtualKeyCode, WindowHandler, WindowHelper};
 use speedy2d::Graphics2D;
 
+use crate::equations::*;
 use crate::heightmap::*;
 use crate::types::*;
-use crate::equations::*;
 
 #[derive(Debug)]
 enum EqStrategy {
@@ -25,7 +25,8 @@ pub struct Game {
     scenes: Vec<GameScene>,
     width: u32,
     height: u32,
-    x_translate: f32,
+    delta: f32,
+    curr_scene: usize,
 }
 
 impl Game {
@@ -41,11 +42,12 @@ impl Game {
             scenes: vec![
                 GameScene::GS2(EqStrategy::E1(cool_equation)),
                 GameScene::GS2(EqStrategy::E2(cool_equation2)),
-                GameScene::GS1(hm)
+                GameScene::GS1(hm),
             ],
             width,
             height,
-            x_translate: 0.0,
+            delta: 0.0,
+            curr_scene: 0,
         }
     }
 }
@@ -54,9 +56,38 @@ const max_height: f32 = 1000.0;
 const num_bins: usize = 10;
 
 impl WindowHandler for Game {
+    fn on_key_down(
+        &mut self,
+        _: &mut WindowHelper,
+        virtual_key_code: Option<VirtualKeyCode>,
+        _: KeyScancode,
+    ) {
+        match virtual_key_code {
+            Some(key_code) => match key_code {
+                VirtualKeyCode::Right => {
+                    if self.curr_scene + 1 >= self.scenes.len() {
+                        self.curr_scene = 0;
+                    } else {
+                        self.curr_scene = self.curr_scene + 1;
+                    }
+                }
+                VirtualKeyCode::Left => {
+                    if self.curr_scene == 0 {
+                        self.curr_scene = self.scenes.len() - 1
+                    } else {
+                        self.curr_scene = self.curr_scene - 1;
+                    }
+                }
+                _ => {}
+            },
+            _ => {}
+        }
+        // println!("{:?}: virtual_key_code. {:?}: scancode", virtual_key_code, scancode);
+    }
+
     fn on_draw(&mut self, helper: &mut WindowHelper, graphics: &mut Graphics2D) {
         graphics.clear_screen(Color::from_rgb(0.0, 0.0, 0.0));
-        let scene = &self.scenes[1];
+        let scene = &self.scenes[self.curr_scene];
         match scene {
             GameScene::GS1(heightmap) => {
                 let rect_distance = 5.0 as f32;
@@ -112,7 +143,7 @@ impl WindowHandler for Game {
                                         0.0,
                                         1.0,
                                         0.0,
-                                        equation(x as f32, y as f32, self.x_translate),
+                                        equation(x as f32, y as f32, self.delta),
                                         num_bins,
                                         max_height,
                                     ),
@@ -122,19 +153,19 @@ impl WindowHandler for Game {
                                 let rect_distance = rect_distance as f32;
                                 let x = x as f32;
                                 let y = y as f32;
-                                let result = equation(x, y, self.x_translate);
+                                let result = equation(x, y, self.delta);
                                 let xy = Vector2 { x, y } * rect_distance;
                                 graphics.draw_line(
                                     xy,
                                     xy + result,
                                     1.0,
-                                    Color::from_rgba(0.0, 1.0, 0.0, self.x_translate),
+                                    Color::from_rgba(0.0, 1.0, 0.0, self.delta),
                                 );
                             }
                         }
                     }
                 }
-                self.x_translate += 1.0;
+                self.delta += 1.0;
             }
         }
         helper.request_redraw();
