@@ -12,4 +12,4 @@ Use left and right to navigate scenes
 
 ### Example budget demoscene
 
-<img src="./etc/1.png"/>
+<img src="./etc/output.gif"/>
